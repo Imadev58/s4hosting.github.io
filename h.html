@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>s4 Hosting</title>
+    <title>onServer Hosting</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -82,17 +82,17 @@
             flex-direction: column;
         }
 
-        .file-list, .console, .stats {
+        .file-list {
             margin-bottom: 20px;
         }
 
-        .file-list ul, .stats ul {
+        .file-list ul {
             list-style: none;
             padding: 0;
             margin: 0;
         }
 
-        .file-list li, .stats li {
+        .file-list li {
             background: #3b4a5a;
             padding: 10px;
             border-radius: 4px;
@@ -108,6 +108,7 @@
             border-radius: 4px;
             height: 200px;
             overflow-y: auto;
+            margin-bottom: 20px;
         }
 
         .stats {
@@ -115,9 +116,19 @@
             flex-direction: column;
         }
 
+        .stats ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
         .stats li {
             display: flex;
             justify-content: space-between;
+            background: #3b4a5a;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
         }
 
         .actions {
@@ -140,42 +151,6 @@
             background: #7157a3;
         }
     </style>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const startBtn = document.getElementById('startBtn');
-            const stopBtn = document.getElementById('stopBtn');
-            const restartBtn = document.getElementById('restartBtn');
-            const consoleLog = document.getElementById('consoleLog');
-            let isRunning = false;
-
-            startBtn.addEventListener('click', function() {
-                if (!isRunning) {
-                    isRunning = true;
-                    logToConsole("Server started.");
-                }
-            });
-
-            stopBtn.addEventListener('click', function() {
-                if (isRunning) {
-                    isRunning = false;
-                    logToConsole("Server stopped.");
-                }
-            });
-
-            restartBtn.addEventListener('click', function() {
-                if (isRunning) {
-                    logToConsole("Server restarted.");
-                }
-            });
-
-            function logToConsole(message) {
-                const p = document.createElement('p');
-                p.textContent = message;
-                consoleLog.appendChild(p);
-                consoleLog.scrollTop = consoleLog.scrollHeight;
-            }
-        });
-    </script>
 </head>
 <body>
     <header>
@@ -218,29 +193,78 @@
                     <button id="restartBtn">Restart</button>
                 </div>
                 <h2 id="files">Files</h2>
-                <div class="file-list">
-                    <ul>
-                        <li>
-                            <span>.cache</span>
-                            <span>Jun 3rd, 2024 12:19PM</span>
-                        </li>
-                        <li>
-                            <span>.local</span>
-                            <span>2 days ago</span>
-                        </li>
-                        <li>
-                            <span>main2.py</span>
-                            <span>about 14 hours ago</span>
-                        </li>
-                    </ul>
+                <div class="file-list" id="fileList">
+                    <!-- Files and directories will be dynamically loaded here -->
                 </div>
                 <div class="actions">
-                    <button>Create Directory</button>
-                    <button>Upload</button>
-                    <button>New File</button>
+                    <button onclick="createDirectory()">Create Directory</button>
+                    <button onclick="uploadFile()">Upload</button>
+                    <button onclick="newFile()">New File</button>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const restartBtn = document.getElementById('restartBtn');
+            const consoleLog = document.getElementById('consoleLog');
+            const fileList = document.getElementById('fileList');
+            let isRunning = false;
+
+            startBtn.addEventListener('click', function() {
+                if (!isRunning) {
+                    isRunning = true;
+                    logToConsole("Server started.");
+                }
+            });
+
+            stopBtn.addEventListener('click', function() {
+                if (isRunning) {
+                    isRunning = false;
+                    logToConsole("Server stopped.");
+                }
+            });
+
+            restartBtn.addEventListener('click', function() {
+                if (isRunning) {
+                    logToConsole("Server restarted.");
+                }
+            });
+
+            function logToConsole(message) {
+                const p = document.createElement('p');
+                p.textContent = message;
+                consoleLog.appendChild(p);
+                consoleLog.scrollTop = consoleLog.scrollHeight;
+            }
+
+            // Sample data to demonstrate file list
+            const files = [
+                { name: ".cache", date: "Jun 3rd, 2024 12:19PM" },
+                { name: ".local", date: "2 days ago" },
+                { name: "main2.py", date: "about 14 hours ago" }
+            ];
+
+            files.forEach(file => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${file.name}</span><span>${file.date}</span>`;
+                fileList.appendChild(li);
+            });
+        });
+
+        function createDirectory() {
+            alert("Function to create a directory");
+        }
+
+        function uploadFile() {
+            alert("Function to upload a file");
+        }
+
+        function newFile() {
+            alert("Function to create a new file");
+        }
+    </script>
 </body>
 </html>
