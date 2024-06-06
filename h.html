@@ -3,85 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hosting Platform</title>
+    <title>s4 Hosting</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #2f3b4a;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            height: 100vh;
         }
 
-        .container {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        header {
             width: 100%;
-            max-width: 800px;
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-
-        .input-group {
-            margin-bottom: 10px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .input-group input, .input-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        .input-group button {
-            width: 100%;
-            padding: 10px;
-            background-color: #9b59b6;
-            border: none;
-            border-radius: 4px;
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .input-group button:hover {
-            background-color: #7157a3;
-        }
-
-        .server-list {
-            list-style-type: none;
-            padding: 0;
-            margin-bottom: 20px;
-        }
-
-        .server-list li {
-            background: #f4f4f4;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
+            background: #1b2735;
+            padding: 10px 0;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
         }
 
-        .server-list .status {
-            color: green;
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            background: #3b4a5a;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+
+        .nav-bar a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        .nav-bar a:hover {
+            text-decoration: underline;
+        }
+
+        .content {
+            display: flex;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .content .sidebar {
+            width: 250px;
+            background: #1b2735;
+            padding: 20px;
+            border-radius: 8px;
+            margin-right: 20px;
+        }
+
+        .content .main {
+            flex-grow: 1;
+            background: #1b2735;
+            padding: 20px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .file-list, .console, .stats {
+            margin-bottom: 20px;
+        }
+
+        .file-list ul, .stats ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .file-list li, .stats li {
+            background: #3b4a5a;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
         }
 
         .console {
-            background: #333;
+            background: #2f3b4a;
             color: #fff;
             padding: 10px;
             border-radius: 4px;
@@ -89,75 +110,67 @@
             overflow-y: auto;
         }
 
-        .console p {
-            margin: 5px 0;
+        .stats {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stats li {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+
+        .actions button {
+            background: #9b59b6;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            padding: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .actions button:hover {
+            background: #7157a3;
         }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const serverForm = document.getElementById('serverForm');
-            const fileForm = document.getElementById('fileForm');
-            const serverList = document.getElementById('serverList');
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const restartBtn = document.getElementById('restartBtn');
             const consoleLog = document.getElementById('consoleLog');
-            const servers = [];
+            let isRunning = false;
 
-            serverForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                const serverName = document.getElementById('serverName').value;
-                addServer(serverName);
-                document.getElementById('serverName').value = '';
-            });
-
-            fileForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                const serverName = document.getElementById('fileServerName').value;
-                const fileName = document.getElementById('fileName').value;
-                const fileContent = document.getElementById('fileContent').value;
-                addFileToServer(serverName, fileName, fileContent);
-            });
-
-            function addServer(name) {
-                const server = {
-                    name: name,
-                    status: 'Running',
-                    files: []
-                };
-                servers.push(server);
-                renderServers();
-                logToConsole(`Server "${name}" created and running.`);
-            }
-
-            function addFileToServer(serverName, fileName, fileContent) {
-                const server = servers.find(s => s.name === serverName);
-                if (server) {
-                    server.files.push({
-                        name: fileName,
-                        content: fileContent
-                    });
-                    logToConsole(`File "${fileName}" added to server "${serverName}".`);
-                } else {
-                    logToConsole(`Error: Server "${serverName}" not found.`, true);
+            startBtn.addEventListener('click', function() {
+                if (!isRunning) {
+                    isRunning = true;
+                    logToConsole("Server started.");
                 }
-            }
+            });
 
-            function renderServers() {
-                serverList.innerHTML = '';
-                servers.forEach((server) => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <span>${server.name}</span>
-                        <span class="status">${server.status}</span>
-                    `;
-                    serverList.appendChild(li);
-                });
-            }
+            stopBtn.addEventListener('click', function() {
+                if (isRunning) {
+                    isRunning = false;
+                    logToConsole("Server stopped.");
+                }
+            });
 
-            function logToConsole(message, isError = false) {
+            restartBtn.addEventListener('click', function() {
+                if (isRunning) {
+                    logToConsole("Server restarted.");
+                }
+            });
+
+            function logToConsole(message) {
                 const p = document.createElement('p');
                 p.textContent = message;
-                if (isError) {
-                    p.style.color = 'red';
-                }
                 consoleLog.appendChild(p);
                 consoleLog.scrollTop = consoleLog.scrollHeight;
             }
@@ -165,24 +178,69 @@
     </script>
 </head>
 <body>
+    <header>
+        <h1>onServer Hosting</h1>
+    </header>
     <div class="container">
-        <h1>Hosting Platform</h1>
-        <form id="serverForm" class="input-group">
-            <label for="serverName">Server Name</label>
-            <input type="text" id="serverName" name="serverName" required>
-            <button type="submit">Create Server</button>
-        </form>
-        <ul id="serverList" class="server-list"></ul>
-        <form id="fileForm" class="input-group">
-            <label for="fileServerName">Server Name</label>
-            <input type="text" id="fileServerName" name="fileServerName" required>
-            <label for="fileName">File Name</label>
-            <input type="text" id="fileName" name="fileName" required>
-            <label for="fileContent">File Content</label>
-            <textarea id="fileContent" name="fileContent" rows="4" required></textarea>
-            <button type="submit">Add File</button>
-        </form>
-        <div id="consoleLog" class="console"></div>
+        <div class="nav-bar">
+            <a href="#console">Console</a>
+            <a href="#files">Files</a>
+            <a href="#databases">Databases</a>
+            <a href="#schedules">Schedules</a>
+            <a href="#users">Users</a>
+            <a href="#backups">Backups</a>
+            <a href="#network">Network</a>
+            <a href="#startup">Startup</a>
+            <a href="#settings">Settings</a>
+            <a href="#activity">Activity</a>
+        </div>
+        <div class="content">
+            <div class="sidebar">
+                <h2>Server Stats</h2>
+                <div class="stats">
+                    <ul>
+                        <li><span>CPU Load:</span> <span id="cpuLoad">0%</span></li>
+                        <li><span>Memory:</span> <span id="memoryUsage">0MB</span></li>
+                        <li><span>Disk:</span> <span id="diskUsage">0MB</span></li>
+                        <li><span>Uptime:</span> <span id="uptime">0s</span></li>
+                        <li><span>Address:</span> <span id="address">node1.onserver.org:1034</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="main">
+                <h2 id="console">Console</h2>
+                <div class="console" id="consoleLog">
+                    <p>Server marked as offline...</p>
+                </div>
+                <div class="actions">
+                    <button id="startBtn">Start</button>
+                    <button id="stopBtn">Stop</button>
+                    <button id="restartBtn">Restart</button>
+                </div>
+                <h2 id="files">Files</h2>
+                <div class="file-list">
+                    <ul>
+                        <li>
+                            <span>.cache</span>
+                            <span>Jun 3rd, 2024 12:19PM</span>
+                        </li>
+                        <li>
+                            <span>.local</span>
+                            <span>2 days ago</span>
+                        </li>
+                        <li>
+                            <span>main2.py</span>
+                            <span>about 14 hours ago</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="actions">
+                    <button>Create Directory</button>
+                    <button>Upload</button>
+                    <button>New File</button>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>
