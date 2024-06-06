@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hosting Platform</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .input-group {
+            margin-bottom: 10px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .input-group button {
+            width: 100%;
+            padding: 10px;
+            background-color: #9b59b6;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .input-group button:hover {
+            background-color: #7157a3;
+        }
+
+        .server-list {
+            list-style-type: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .server-list li {
+            background: #f4f4f4;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .server-list .status {
+            color: green;
+        }
+
+        .console {
+            background: #333;
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            height: 200px;
+            overflow-y: auto;
+        }
+
+        .console p {
+            margin: 5px 0;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const serverForm = document.getElementById('serverForm');
+            const fileForm = document.getElementById('fileForm');
+            const serverList = document.getElementById('serverList');
+            const consoleLog = document.getElementById('consoleLog');
+            const servers = [];
+
+            serverForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const serverName = document.getElementById('serverName').value;
+                addServer(serverName);
+                document.getElementById('serverName').value = '';
+            });
+
+            fileForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                const serverName = document.getElementById('fileServerName').value;
+                const fileName = document.getElementById('fileName').value;
+                const fileContent = document.getElementById('fileContent').value;
+                addFileToServer(serverName, fileName, fileContent);
+            });
+
+            function addServer(name) {
+                const server = {
+                    name: name,
+                    status: 'Running',
+                    files: []
+                };
+                servers.push(server);
+                renderServers();
+                logToConsole(`Server "${name}" created and running.`);
+            }
+
+            function addFileToServer(serverName, fileName, fileContent) {
+                const server = servers.find(s => s.name === serverName);
+                if (server) {
+                    server.files.push({
+                        name: fileName,
+                        content: fileContent
+                    });
+                    logToConsole(`File "${fileName}" added to server "${serverName}".`);
+                } else {
+                    logToConsole(`Error: Server "${serverName}" not found.`, true);
+                }
+            }
+
+            function renderServers() {
+                serverList.innerHTML = '';
+                servers.forEach((server) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <span>${server.name}</span>
+                        <span class="status">${server.status}</span>
+                    `;
+                    serverList.appendChild(li);
+                });
+            }
+
+            function logToConsole(message, isError = false) {
+                const p = document.createElement('p');
+                p.textContent = message;
+                if (isError) {
+                    p.style.color = 'red';
+                }
+                consoleLog.appendChild(p);
+                consoleLog.scrollTop = consoleLog.scrollHeight;
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Hosting Platform</h1>
+        <form id="serverForm" class="input-group">
+            <label for="serverName">Server Name</label>
+            <input type="text" id="serverName" name="serverName" required>
+            <button type="submit">Create Server</button>
+        </form>
+        <ul id="serverList" class="server-list"></ul>
+        <form id="fileForm" class="input-group">
+            <label for="fileServerName">Server Name</label>
+            <input type="text" id="fileServerName" name="fileServerName" required>
+            <label for="fileName">File Name</label>
+            <input type="text" id="fileName" name="fileName" required>
+            <label for="fileContent">File Content</label>
+            <textarea id="fileContent" name="fileContent" rows="4" required></textarea>
+            <button type="submit">Add File</button>
+        </form>
+        <div id="consoleLog" class="console"></div>
+    </div>
+</body>
+</html>
